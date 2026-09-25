@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
-import { GoogleGenAI } from "@google/genai";
+import { generateContent } from "../services/geminiService";
 import { Image as ImageIcon, Sparkles, Loader2, Search, ExternalLink, ImagePlus, Bot, User, Download, RefreshCw, Upload, FileText, BookOpen, Save, Copy, Check, Zap, ChevronDown, Maximize2, X, FlaskConical, Leaf, HeartPulse, Calendar, ArrowUp, Clock, Target, Sliders } from 'lucide-react';
 import { Subject, Topic } from '../types';
 import { flattenTopics } from '../services/storageService';
@@ -157,8 +157,7 @@ export const AILabView: React.FC<AILabViewProps> = ({ syllabus, onUpdateTopic })
     setIsChatLoading(true);
 
     try {
-      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-      const response = await ai.models.generateContent({
+      const response = await generateContent({
         model: "gemini-3-flash-preview",
         contents: userMsg,
         config: {
@@ -339,8 +338,7 @@ Follow these Formatting & Style Rules:
       const base64Data = selectedImage.split(',')[1];
       const mimeType = selectedImage.split(';')[0].split(':')[1];
 
-      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-      const response = await ai.models.generateContent({
+      const response = await generateContent({
         model: 'gemini-2.5-flash-image',
         contents: {
             parts: [
@@ -389,10 +387,8 @@ Follow these Formatting & Style Rules:
       setGeneratedNote(null);
 
       try {
-          const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-
           // Parallel Execution: 1. Generate Text (Gemini 3) 2. Generate Diagram (Nano Banana / Gemini 2.5 Flash Image)
-          const textPromise = ai.models.generateContent({
+          const textPromise = generateContent({
               model: "gemini-3-flash-preview",
               contents: `Create a comprehensive, point-wise study guide for the topic: "${topic.name}".
               
@@ -405,7 +401,7 @@ Follow these Formatting & Style Rules:
               Format using Markdown. Use bolding **text** for key terms.`
           });
 
-          const imagePromise = ai.models.generateContent({
+          const imagePromise = generateContent({
             model: 'gemini-2.5-flash-image', 
             contents: {
                 parts: [{ text: `A clear, scientific educational diagram explaining ${topic.name}. White background, high contrast, schematic style, labeled parts.` }]

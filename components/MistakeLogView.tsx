@@ -3,7 +3,7 @@ import { MistakeLog, Subject } from '../types';
 import { Card } from './ui/Card';
 import { flattenTopics } from '../services/storageService';
 import { Plus, Trash2, ArrowRight, PieChart, Filter, Sparkles, Loader2, Lightbulb } from 'lucide-react';
-import { GoogleGenAI } from "@google/genai";
+import { generateContent } from "../services/geminiService";
 
 interface MistakeLogViewProps {
   syllabus: Subject[];
@@ -44,8 +44,7 @@ export const MistakeLogView: React.FC<MistakeLogViewProps> = ({ syllabus, mistak
   const handleGetAIFix = async (mistake: MistakeLog) => {
       setLoadingAiId(mistake.id);
       try {
-          const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-          const response = await ai.models.generateContent({
+          const response = await generateContent({
               model: "gemini-3-flash-preview",
               contents: `I made a mistake while studying Biotechnology.
               

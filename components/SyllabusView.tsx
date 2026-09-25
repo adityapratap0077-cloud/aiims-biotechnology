@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Subject, Topic, TopicStatus, RecallStrength } from '../types';
 import { ChevronDown, ChevronRight, Flame, Check, Brain, RotateCcw, StickyNote, Sparkles, Loader2, Save, Edit3, Eye } from 'lucide-react';
 import { Card } from './ui/Card';
-import { GoogleGenAI } from "@google/genai";
+import { generateContent } from "../services/geminiService";
 
 interface SyllabusViewProps {
   syllabus: Subject[];
@@ -59,8 +59,7 @@ export const SyllabusView: React.FC<SyllabusViewProps> = ({ syllabus, onUpdateTo
     // Actually better to switch to View mode after generation to see result
     
     try {
-        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-        const response = await ai.models.generateContent({
+        const response = await generateContent({
             model: 'gemini-3-flash-preview', 
             contents: `Write detailed, exam-oriented study notes for the topic "${topicName}" (Subject: ${subjectName}, Chapter: ${chapterName}). 
             
